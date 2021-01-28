@@ -30,7 +30,8 @@ function Module.new(Delay: integer, Callback: Function)
 
     local Connection = Services.RunService.RenderStepped:Connect(function()
         if time() - Loop.LastCalled > Loop.Delay then
-            coroutine.wrap(Loop.Function)()
+            Loop.LastCalled = math.huge
+            Loop.Function()
             Loop.LastCalled = time()
         end
     end)
@@ -38,6 +39,14 @@ function Module.new(Delay: integer, Callback: Function)
 
     function Loop:Break()
         Connection:Disconnect()
+    end
+
+    function Loop:Execute()
+        if time() - Loop.LastCalled > Loop.Delay then
+            Loop.LastCalled = math.huge
+            Loop.Function()
+            Loop.LastCalled = time()
+        end
     end
 
     return Loop
